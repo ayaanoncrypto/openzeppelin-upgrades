@@ -5,10 +5,11 @@ import { getUnlinkedBytecode } from './query';
 import { getVersion } from '../version';
 
 test('getUnlinkedBytecode skips invalid unrelated link references', t => {
-  const bytecode = '0x6000';
+  const unlinkedBytecode = '0x12__$5ae0c2211b657f8a7ca51e0b14f2a8333d$__78';
+  const linkedBytecode = '0x12456456456456456456456456456456456456456478';
   const validation: Record<string, Partial<ContractValidation>> = {
     Unrelated: {
-      version: getVersion(bytecode),
+      version: getVersion('0x6000'),
       linkReferences: [
         {
           src: '',
@@ -19,9 +20,28 @@ test('getUnlinkedBytecode skips invalid unrelated link references', t => {
         },
       ],
     },
+    Valid: {
+      version: getVersion(unlinkedBytecode),
+      linkReferences: [
+        {
+          src: '',
+          name: '',
+          start: 50,
+          length: 20,
+          placeholder: '__$5ae0c2211b657f8a7ca51e0b14f2a8333d$__',
+        },
+        {
+          src: '',
+          name: '',
+          start: 30,
+          length: 20,
+          placeholder: '__$5ae0c2211b657f8a7ca51e0b14f2a8333d$__',
+        },
+      ],
+    },
   };
 
-  t.is(getUnlinkedBytecode(validation as ValidationRunData, bytecode), bytecode);
+  t.is(getUnlinkedBytecode(validation as ValidationRunData, linkedBytecode), unlinkedBytecode);
 });
 test('getUnlinkedBytecode', t => {
   const unlinkedBytecode = '0x12__$5ae0c2211b657f8a7ca51e0b14f2a8333d$__78';
